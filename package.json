@@ -1,0 +1,20 @@
+{
+  "name": "to-do-list",
+  "version": "1.0.0",
+  "description": "A to-do list made following TOP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^6.7.3",
+    "eslint": "^8.40.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "style-loader": "^3.3.2",
+    "webpack-cli": "^5.1.0"
+  }
+}

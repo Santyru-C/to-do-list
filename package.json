@@ -4,7 +4,8 @@
   "description": "A to-do list made following TOP",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack serve --open"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,10 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
     "style-loader": "^3.3.2",
-    "webpack-cli": "^5.1.0"
+    "webpack-cli": "^5.1.0",
+    "webpack-dev-server": "^4.15.0"
+  },
+  "dependencies": {
+    "url-loader": "^4.1.1"
   }
 }

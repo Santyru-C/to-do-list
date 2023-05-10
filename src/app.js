@@ -5,11 +5,17 @@ export default class App {
     this.inbox = [];
     this.todayTasks = [];
     this.weekTasks = [];
-    this.projects = [];
+    this.projectList = [];
   }
 
   add_new_project(projectTitle) {
-    const new_project = new Project(projectTitle);
-    this.projects.push(new_project);
+    const newProject = new Project(projectTitle);
+    this.projectList.push(newProject);
+  }
+
+  remove_project(project) {
+    // let the DOM alert the user if they are sure about this
+    const indexToRemove = this.projectList.indexOf(project);
+    this.projectList.splice(indexToRemove, 1);
   }
 }

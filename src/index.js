@@ -1,10 +1,14 @@
+import { getHostname } from 'webpack-dev-server';
 import App from './app';
 
 const todoList = new App(); // set it as an IIFE later
 
 const DomManipulator = (() => {
+  // Buttons
   const menuBtn = document.getElementById('menu-btn');
   const newProjectButton = document.getElementById('new-project-btn');
+  const newProjectSubmit = document.getElementById('new-project-submit');
+  // Containers
   const navContainer = document.getElementsByClassName('nav-container')[0];
   const newProjectModal = document.getElementsByClassName('new-project-modal')[0];
 
@@ -14,6 +18,12 @@ const DomManipulator = (() => {
     (classArray.includes('hidden')) ? classList.remove('hidden') : classList.add('hidden');
   };
 
+  const submitNewProject = (event) => {
+    event.preventDefault();
+    const newProjectForm = getElementById('new-project-form');
+  };
+
+  // Event Listeners
   menuBtn.addEventListener('click', () => {
     toggleContainer(navContainer);
   });
@@ -21,4 +31,6 @@ const DomManipulator = (() => {
   newProjectButton.addEventListener('click', () => {
     toggleContainer(newProjectModal);
   });
+
+  newProjectSubmit.addEventListener('click', submitNewProject);
 })();

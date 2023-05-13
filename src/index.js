@@ -18,15 +18,32 @@ const DomManipulator = (() => {
     (classArray.includes('hidden')) ? classList.remove('hidden') : classList.add('hidden');
   };
 
-  const createProjectBtn = (project) => {
-    const projectBtn = document.createElement('button');
-    projectBtn.dataset.boundId = project.id;
-    projectBtn.textContent = project.title;
+  const removeProjectFromList = (e) => {
+    // let the DOM alert the user if they are sure about this
+    const targetItem = e.target.parentElement;
+    const projectId = targetItem.dataset.boundId;
 
-    return projectBtn;
+    const projectToRemove = TodoList.getProjectFromId(projectId);
+    TodoList.removeProject(projectToRemove);
+    console.log(TodoList.projectList);
+    targetItem.remove();
   };
 
-  const addBtnToContainer = (btn, container) => {
+  const createProjectItem = (project) => {
+    const projectItem = document.createElement('li');
+    projectItem.dataset.boundId = project.id;
+    projectItem.textContent = project.title;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.classList.add('project-remove-btn');
+    removeBtn.textContent = 'x';
+    removeBtn.addEventListener('click', removeProjectFromList);
+    projectItem.appendChild(removeBtn);
+
+    return projectItem;
+  };
+
+  const addToContainer = (btn, container) => {
     container.appendChild(btn);
   };
 
@@ -34,8 +51,8 @@ const DomManipulator = (() => {
     event.preventDefault();
     const newProjectName = document.getElementById('new-project-name');
     const newProject = TodoList.addNewProject(newProjectName.value);
-    const projectButton = createProjectBtn(newProject);
-    addBtnToContainer(projectButton, projectListContainer);
+    const projectButton = createProjectItem(newProject);
+    addToContainer(projectButton, projectListContainer);
 
     toggleContainer(newProjectModal);
     newProjectName.value = '';
@@ -46,13 +63,10 @@ const DomManipulator = (() => {
     const storedProjects = TodoList.projectList;
 
     storedProjects.forEach((project) => {
-      const projectBtn = createProjectBtn(project);
-      addBtnToContainer(projectBtn, projectListContainer);
+      const projectItem = createProjectItem(project);
+      addToContainer(projectItem, projectListContainer);
     });
   };
-
-  // addProjectToContainer
-  // removeProjectFromContainer
 
   // Event Listeners
   menuBtn.addEventListener('click', () => {

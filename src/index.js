@@ -1,14 +1,14 @@
-import { getHostname } from 'webpack-dev-server';
 import App from './app';
 
-const todoList = new App(); // set it as an IIFE later
+const TodoList = new App(); // set it as an IIFE later
 
 const DomManipulator = (() => {
   // Buttons
   const menuBtn = document.getElementById('menu-btn');
   const newProjectButton = document.getElementById('new-project-btn');
-  const newProjectSubmit = document.getElementById('new-project-submit');
   // Containers
+  const newProjectForm = document.getElementById('new-project-form');
+  const projectListContainer = document.getElementsByClassName('project-list-container')[0];
   const navContainer = document.getElementsByClassName('nav-container')[0];
   const newProjectModal = document.getElementsByClassName('new-project-modal')[0];
 
@@ -18,10 +18,41 @@ const DomManipulator = (() => {
     (classArray.includes('hidden')) ? classList.remove('hidden') : classList.add('hidden');
   };
 
+  const createProjectBtn = (project) => {
+    const projectBtn = document.createElement('button');
+    projectBtn.dataset.boundId = project.id;
+    projectBtn.textContent = project.title;
+
+    return projectBtn;
+  };
+
+  const addBtnToContainer = (btn, container) => {
+    container.appendChild(btn);
+  };
+
   const submitNewProject = (event) => {
     event.preventDefault();
-    const newProjectForm = getElementById('new-project-form');
+    const newProjectName = document.getElementById('new-project-name');
+    const newProject = TodoList.addNewProject(newProjectName.value);
+    const projectButton = createProjectBtn(newProject);
+    addBtnToContainer(projectButton, projectListContainer);
+
+    toggleContainer(newProjectModal);
+    newProjectName.value = '';
   };
+
+  const displayAllProjects = () => {
+    // load all stored projects when page first loads
+    const storedProjects = TodoList.projectList;
+
+    storedProjects.forEach((project) => {
+      const projectBtn = createProjectBtn(project);
+      addBtnToContainer(projectBtn, projectListContainer);
+    });
+  };
+
+  // addProjectToContainer
+  // removeProjectFromContainer
 
   // Event Listeners
   menuBtn.addEventListener('click', () => {
@@ -32,5 +63,5 @@ const DomManipulator = (() => {
     toggleContainer(newProjectModal);
   });
 
-  newProjectSubmit.addEventListener('click', submitNewProject);
+  newProjectForm.addEventListener('submit', submitNewProject);
 })();

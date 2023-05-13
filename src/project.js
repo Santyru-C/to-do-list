@@ -3,6 +3,7 @@ import Task from './task';
 export default class Project {
   constructor(title) {
     this.title = title;
+    this.id = Date.now(); // use as a unique identifier
     this.taskList = [];
   }
 
@@ -18,7 +19,7 @@ export default class Project {
     } else { console.log('ERROR: That Item Does Not Exist'); }
   }
 
-  listTasks() {
+  get tasks() {
     return this.taskList;
   }
 }

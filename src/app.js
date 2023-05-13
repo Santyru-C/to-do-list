@@ -8,13 +8,20 @@ export default class App {
     this.projectList = [];
   }
 
+  getProjectFromId(id) {
+    const selectedProject = this.projectList.find((project) => project.id === id);
+
+    return selectedProject;
+  }
+
   addNewProject(projectTitle) {
     const newProject = new Project(projectTitle);
     this.projectList.push(newProject);
+
+    return newProject;
   }
 
   removeProject(project) {
-    // let the DOM alert the user if they are sure about this
     const indexToRemove = this.projectList.indexOf(project);
     this.projectList.splice(indexToRemove, 1);
   }

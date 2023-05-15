@@ -1,32 +1,64 @@
-<!doctype html><html><head><meta charset="utf-8"><title>To Do List</title><meta name="viewport" content="width=device-width,initial-scale=1"><script defer="defer" src="./main.js"></script></head><body>
-  <div class="main-container">
-    <div class="nav-container">
-      <div class="app-title">To Do List</div>
-      <div class="btn-container">
-        <button class="menu-btn">Menu</button>
-      </div>
-    </div>
-    <div class="menu-container">
-      <div class="tab-container">
-        <ul>
-          <li>Inbox</li>
-          <li>Today</li>
-          <li>Week</li>
-        </ul>
-      </div>
-      <div class="container">
-        <div>Projects</div>
-        <div class="project-list-container">
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>To Do List</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <script defer="defer" src="./main.js"></script>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="header-container">
+        <div class="app-title">To Do List</div>
+        <div class="btn-container">
+          <button id="menu-btn">Menu</button>
         </div>
       </div>
-    </div>
-    <div class="project-container">
-      <div class="project-title">Project Title</div>
-      <div class="task-container"></div>
-      <div class="btn-container">
-        <button class="new-task-btn">+</button>
+      <div class="nav-container">
+        <ul class="tab-container">
+          <li class="tab-btn">Inbox</li>
+          <li class="tab-btn">Today</li>
+          <li class="tab-btn">Week</li>
+        </ul>
+        <div class="container">
+          <div>Projects</div>
+          <div><button id="new-project-btn">+</button></div>
+          <ul class="project-list-container"></ul>
+        </div>
+      </div>
+      <div class="new-project-modal">
+        <form id="new-project-form">
+          <label for="new-project-name">Project Name</label>
+          <input type="text" id="new-project-name" required>
+          <div class="btn-wrapper">
+            <button type="submit" id="new-project-submit">Add Project</button>
+            <button id="new-project-cancel">Cancel</button>
+          </div>
+        </form>
+      </div>
+      <div class="project-container">
+        <div class="project-title">Project Title</div>
+        <ul class="task-container"></ul>
+        <div class="btn-container">
+          <button class="new-task-btn">+</button>
+        </div>
+      </div>
+      <div class="new-task-modal">
+        <form id="new-task-form">
+          <label for="task-title">Task Title</label>
+          <input type="text" id="task-title" required>
+          <label for="task-description">Description</label>
+          <textarea type="text" id="task-description"></textarea>
+          <label for="task-duedate">Due Date</label><input type="date" id="task-duedate">
+          <label for="task-priority">Priority</label>
+          <select name="task-priority" id="task-priority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </form>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

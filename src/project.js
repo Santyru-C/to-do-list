@@ -10,6 +10,8 @@ export default class Project {
   addNewTask(title, description, dueDate = 'No Date', priority = 'Low') {
     const newTask = new Task(title, description, dueDate, priority);
     this.taskList.push(newTask);
+
+    return newTask;
   }
 
   removeTask(task) {

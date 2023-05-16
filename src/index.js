@@ -106,24 +106,26 @@ const DomManipulator = (() => {
     });
   };
 
-  const createTaskFromData = () => {
+  const extractTaskData = () => {
     const rawData = Array.from(newTaskForm);
     const dataObj = rawData.reduce((acc, input) => ({ ...acc, [input.id.split('-')[1]]: input.value }), {}); // set object key as a substring ignoring "task-" suffix
-    const newTask = projectOnDisplay.addNewTask(
+    return dataObj
+  }
+
+  const taskObjectFromData = (dataObj) => {
+      const newTask = projectOnDisplay.addNewTask(
       dataObj.title,
       dataObj.description,
       dataObj.duedate,
       dataObj.priority,
     );
 
-    // set id for DOM binding
-    newTask.id = Date.now();
     return newTask;
   };
 
   // always have a project displayed, set "general" or "inbox" as default
 
-  const createElementTemplate = (htmlString) => {
+  const elementFromTemplate = (htmlString) => {
     const template = document.createElement('template');
     template.innerHTML = htmlString.trim();
 
@@ -131,10 +133,34 @@ const DomManipulator = (() => {
   };
 
   // templates
+  const taskElementTemplate = `
+  <div class="task-element">
+  <div class="top-container">
+      <div class="left">
+          <div class="task-title"></div>
+      </div>
+      <div class="right">
+          <div class="task-duedate"></div>
+          <div class="task-priority"></div>
+      </div>
+  </div>
+  <div class="bottom-container hidden">
+      <div class="task-description"></div>
+  </div>
+</div>
+`;
+
+  const createTaskElement = (task) => {
+    // set up DOM element containing all information contained in the task object
+    newTaskElement = elementFromTemplate(taskElementTemplate);
+    taskElementTitle = new
+  };
 
   const submitNewTask = (event) => {
     event.preventDefault();
+    // extract data
     const newTask = createTaskFromData();
+    // const taskElement = createElementTemplate(taskElementHtml);
     // create new task item for display
     // add task item to display
   };

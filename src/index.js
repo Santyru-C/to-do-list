@@ -116,17 +116,26 @@ const DomManipulator = (() => {
       dataObj.priority,
     );
 
-    // set id new function
-
-    console.log(newTask);
+    // set id for DOM binding
+    newTask.id = Date.now();
+    return newTask;
   };
 
   // always have a project displayed, set "general" or "inbox" as default
 
+  const createElementTemplate = (htmlString) => {
+    const template = document.createElement('template');
+    template.innerHTML = htmlString.trim();
+
+    return template.content.firstElementChild; // return as an Element to access all dedicated editor tools
+  };
+
+  // templates
+
   const submitNewTask = (event) => {
     event.preventDefault();
-    createTaskFromData();
-    // create taskitem to display
+    const newTask = createTaskFromData();
+    // create new task item for display
     // add task item to display
   };
 

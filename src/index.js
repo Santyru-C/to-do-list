@@ -30,6 +30,38 @@ const DomManipulator = (() => {
     (classArray.includes('hidden')) ? classList.remove('hidden') : classList.add('hidden');
   };
 
+  const elementFromTemplate = (htmlString) => {
+    const template = document.createElement('template');
+    template.innerHTML = htmlString.trim();
+
+    // return as an Element to access all dedicated editor tools
+    return template.content.firstElementChild;
+  };
+
+  // templates
+  const taskElementTemplate = `
+    <div class="task-element">
+      <div class="top-container">
+        <div class="left">
+          <div class="task-title"></div>
+        </div>
+        <div class="right">
+          <div class="task-duedate"></div>
+          <div class="task-priority"></div>
+        </div>
+      </div>
+      <div class="bottom-container hidden">
+        <div class="task-description"></div>
+      </div>
+    </div>
+  `;
+
+  const bindWithId = (obj, elem) => {
+    const newId = Date.now();
+    obj.id = newId;
+    elem.dataset.boundId = newId;
+  };
+
   const removeProjectFromList = (e) => {
     // let the DOM alert the user if they are sure about this
     const targetItem = e.target.parentElement;
@@ -109,11 +141,11 @@ const DomManipulator = (() => {
   const extractTaskData = () => {
     const rawData = Array.from(newTaskForm);
     const dataObj = rawData.reduce((acc, input) => ({ ...acc, [input.id.split('-')[1]]: input.value }), {}); // set object key as a substring ignoring "task-" suffix
-    return dataObj
-  }
+    return dataObj;
+  };
 
   const taskObjectFromData = (dataObj) => {
-      const newTask = projectOnDisplay.addNewTask(
+    const newTask = projectOnDisplay.addNewTask(
       dataObj.title,
       dataObj.description,
       dataObj.duedate,
@@ -125,44 +157,31 @@ const DomManipulator = (() => {
 
   // always have a project displayed, set "general" or "inbox" as default
 
-  const elementFromTemplate = (htmlString) => {
-    const template = document.createElement('template');
-    template.innerHTML = htmlString.trim();
-
-    return template.content.firstElementChild; // return as an Element to access all dedicated editor tools
-  };
-
-  // templates
-  const taskElementTemplate = `
-  <div class="task-element">
-  <div class="top-container">
-      <div class="left">
-          <div class="task-title"></div>
-      </div>
-      <div class="right">
-          <div class="task-duedate"></div>
-          <div class="task-priority"></div>
-      </div>
-  </div>
-  <div class="bottom-container hidden">
-      <div class="task-description"></div>
-  </div>
-</div>
-`;
-
   const createTaskElement = (task) => {
     // set up DOM element containing all information contained in the task object
-    newTaskElement = elementFromTemplate(taskElementTemplate);
-    taskElementTitle = new
+    const newTaskElement = elementFromTemplate(taskElementTemplate);
+    const title = newTaskElement.getElementsByClassName('task-title')[0];
+    const date = newTaskElement.getElementsByClassName('task-duedate')[0];
+    const priority = newTaskElement.getElementsByClassName('task-priority')[0];
+    const description = newTaskElement.getElementsByClassName('task-description')[0];
+
+    title.textContent = task.title;
+    date.textContent = task.duedate;
+    priority.textContent = task.priority;
+    description.textContent = task.description;
+
+    return newTaskElement;
   };
 
   const submitNewTask = (event) => {
     event.preventDefault();
-    // extract data
-    const newTask = createTaskFromData();
+    const taskData = extractTaskData();
+    const taskObject = taskObjectFromData(taskData);
+    const taskElement = createTaskElement(taskData);
+
+    // bound with id
     // const taskElement = createElementTemplate(taskElementHtml);
-    // create new task item for display
-    // add task item to display
+    // add task item to display     newTask.id = Date.now();
   };
 
   // Event Listeners

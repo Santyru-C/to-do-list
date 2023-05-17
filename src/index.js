@@ -30,12 +30,29 @@ const DomManipulator = (() => {
     (classArray.includes('hidden')) ? classList.remove('hidden') : classList.add('hidden');
   };
 
+  // tools
   const elementFromTemplate = (htmlString) => {
     const template = document.createElement('template');
     template.innerHTML = htmlString.trim();
 
     // return as an Element to access all dedicated editor tools
     return template.content.firstElementChild;
+  };
+
+  const extractFormData = (form) => {
+    const rawData = Array.from(form);
+    // set object key as a substring ignoring "*-" suffix
+    const dataObj = rawData.reduce((acc, input) => ({ ...acc, [input.id.split('-')[1]]: input.value }), {});
+
+    return dataObj;
+  };
+
+  const bindWithId = (obj, elem) => {
+    const newId = Date.now();
+    obj.id = newId;
+    elem.dataset.boundId = newId;
+
+    console.log(obj.id, elem.dataset.boundId);
   };
 
   // templates
@@ -56,11 +73,14 @@ const DomManipulator = (() => {
     </div>
   `;
 
-  const bindWithId = (obj, elem) => {
-    const newId = Date.now();
-    obj.id = newId;
-    elem.dataset.boundId = newId;
-  };
+  const projectElementTemplate = `
+    <li class="project-list-element">
+      <div class="project-element-title"></div>
+      <button class="project-remove-btn">x</button>
+    </li>
+  `;
+
+  // Project Logic ------
 
   const removeProjectFromList = (e) => {
     // let the DOM alert the user if they are sure about this
@@ -93,49 +113,40 @@ const DomManipulator = (() => {
     }
   };
 
-  const showNewTaskModal = () => {
-    console.log('testing');
-  };
+  const createProjectElement = (project) => {
+    const newProjectElement = elementFromTemplate(projectElementTemplate);
+    // custom values
+    const elementTitle = newProjectElement.getElementsByClassName('project-element-title')[0];
+    const elementBtn = newProjectElement.getElementsByClassName('project-remove-btn')[0];
 
-  const createProjectItem = (project) => {
-    const projectItem = document.createElement('li');
-    projectItem.dataset.boundId = project.id;
-    projectItem.textContent = project.title;
-    projectItem.classList.add('project-list-item');
-    projectItem.addEventListener('click', displayProject);
+    // set values
+    elementTitle.textContent = project.title;
+    // Event listeners
+    elementBtn.addEventListener('click', removeProjectFromList);
 
-    const removeBtn = document.createElement('button');
-    removeBtn.classList.add('project-remove-btn');
-    removeBtn.textContent = 'x';
-    removeBtn.addEventListener('click', removeProjectFromList);
-    projectItem.appendChild(removeBtn);
-
-    return projectItem;
-  };
-
-  const addToContainer = (btn, container) => {
-    container.appendChild(btn);
+    return newProjectElement;
   };
 
   const submitNewProject = (event) => {
     event.preventDefault();
-    const newProjectName = document.getElementById('new-project-name');
-    const newProject = TodoList.addNewProject(newProjectName.value);
-    const projectButton = createProjectItem(newProject);
-    addToContainer(projectButton, projectListContainer);
+
+    // create necessary objects and elements
+    const projectData = extractFormData(newProjectForm);
+    const projectObj = TodoList.addNewProject(projectData.title);
+    const projectElement = createProjectElement(projectObj);
+    // bind both elements for functionality
+    bindWithId(projectObj, projectElement);
+
+    projectListContainer.appendChild(projectElement);
 
     toggleContainer(newProjectModal);
-    newProjectName.value = '';
+    newProjectForm.reset();
   };
 
-  const displayAllProjects = () => {
-    // load all stored projects when page first loads
-    const storedProjects = TodoList.projectList;
-
-    storedProjects.forEach((project) => {
-      const projectItem = createProjectItem(project);
-      addToContainer(projectItem, projectListContainer);
-    });
+  // ---- Task logic
+  const toggleTaskModal = () => {
+    toggleContainer(newTaskModal);
+    newTaskForm.reset();
   };
 
   const extractTaskData = () => {
@@ -175,13 +186,15 @@ const DomManipulator = (() => {
 
   const submitNewTask = (event) => {
     event.preventDefault();
+    // create necessary items
     const taskData = extractTaskData();
     const taskObject = taskObjectFromData(taskData);
     const taskElement = createTaskElement(taskData);
 
-    // bound with id
-    // const taskElement = createElementTemplate(taskElementHtml);
-    // add task item to display     newTask.id = Date.now();
+    bindWithId(taskObject, taskElement);
+
+    // display task element
+    taskContainer.appendChild(taskElement);
   };
 
   // Event Listeners
@@ -197,7 +210,7 @@ const DomManipulator = (() => {
 
   newTaskButton.addEventListener('click', () => { toggleContainer(newTaskModal); });
 
-  newTaskSubmit.addEventListener('click', submitNewTask);
+  newTaskForm.addEventListener('submit', submitNewTask);
 
-  newTaskCancel.addEventListener('click', () => { toggleContainer(newTaskModal); newTaskForm.reset(); }); // add new specific toggle function for form });
+  newTaskCancel.addEventListener('click', toggleTaskModal); // add new specific toggle function for form });
 })();

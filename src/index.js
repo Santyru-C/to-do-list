@@ -81,35 +81,74 @@ const DomManipulator = (() => {
   `;
 
   // Project Logic ------
+  const getSiblingList = (element) => {
+    const parentChildren = Array.from(element.parentElement.children);
+    const siblingList = parentChildren.filter((child) => child !== element);
+    return siblingList;
+  };
 
   const removeProjectFromList = (e) => {
     // let the DOM alert the user if they are sure about this
-    const targetItem = e.target.parentElement;
-    const projectId = targetItem.dataset.boundId;
-
-    // remove project from DOM and app storage
+    const targetElement = e.target.parentElement;
+    const projectId = targetElement.dataset.boundId;
     const projectToRemove = TodoList.getProjectFromId(projectId);
+
+    // display sibling project if posible
+    const siblingElement = getSiblingList(targetElement)[0];
+    console.log(siblingElement);
+    if (siblingElement !== undefined) {
+      const siblingProject = TodoList.getProjectFromId(siblingElement.dataset.boundId);
+      testdisplay(siblingProject);
+    } else {
+      clearProjectDisplay();
+    }
+
+    // remove project
     TodoList.removeProject(projectToRemove);
-    console.log(TodoList.projectList);
-    targetItem.remove();
+    targetElement.remove();
   };
 
-  const displayProject = (e) => {
-    const { target } = e;
-    // check if the label itself was clicked and not any child element
-    if (target.classList.contains('project-list-item')) {
-      const { boundId } = target.dataset;
-      const boundProject = TodoList.getProjectFromId(boundId);
-      projectOnDisplay = boundProject;
+  const clearProjectDisplay = () => {
+    taskContainer.replaceChildren();
+    projectTitleDisplay.textContent = '';
+  };
+
+  const displayAllTasks = (project) => {
+    const tasksToDisplay = project.taskList;
+    tasksToDisplay.forEach((taskObj) => {
+      const taskElement = createTaskElement(taskObj);
+      taskContainer.appendChild(taskElement);
+    });
+  };
+
+  const testdisplay = (project) => {
+    if (projectOnDisplay !== project) {
+      clearProjectDisplay();
+      projectOnDisplay = project;
       // change displayed title
-      projectTitleDisplay.textContent = boundProject.title;
-      if (boundProject.taskList.length === 0) {
+      projectTitleDisplay.textContent = project.title;
+      displayAllTasks(project);
+
+      if (project.taskList.length === 0) {
         const noTaskitem = document.createElement('li');
         noTaskitem.textContent = 'No Tasks to Display';
         taskContainer.appendChild(noTaskitem);
       }
-      // display all project tasks
-      //
+    }
+  };
+
+  const displayProject = (e) => {
+    // put this logic inside the event listener
+    let { target } = e;
+    // check if the label itself was clicked and not any child element
+    if (!target.classList.contains('project-remove-btn')) {
+      // get li if the clicked element is a child element
+      target = target.classList.contains('project-list-element') ? target : target.parentElement;
+
+      const { boundId } = target.dataset;
+      const boundProject = TodoList.getProjectFromId(boundId);
+
+      testdisplay(boundProject);
     }
   };
 
@@ -123,6 +162,7 @@ const DomManipulator = (() => {
     elementTitle.textContent = project.title;
     // Event listeners
     elementBtn.addEventListener('click', removeProjectFromList);
+    newProjectElement.addEventListener('click', displayProject);
 
     return newProjectElement;
   };

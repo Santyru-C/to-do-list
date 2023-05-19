@@ -65,6 +65,7 @@ const DomManipulator = (() => {
         <div class="right">
           <div class="task-duedate"></div>
           <div class="task-priority"></div>
+          <button class="task-remove-btn">x</button>
         </div>
       </div>
       <div class="bottom-container hidden">
@@ -85,27 +86,6 @@ const DomManipulator = (() => {
     const parentChildren = Array.from(element.parentElement.children);
     const siblingList = parentChildren.filter((child) => child !== element);
     return siblingList;
-  };
-
-  const removeProjectFromList = (e) => {
-    // let the DOM alert the user if they are sure about this
-    const targetElement = e.target.parentElement;
-    const projectId = targetElement.dataset.boundId;
-    const projectToRemove = TodoList.getProjectFromId(projectId);
-
-    // display sibling project if posible
-    const siblingElement = getSiblingList(targetElement)[0];
-    console.log(siblingElement);
-    if (siblingElement !== undefined) {
-      const siblingProject = TodoList.getProjectFromId(siblingElement.dataset.boundId);
-      testdisplay(siblingProject);
-    } else {
-      clearProjectDisplay();
-    }
-
-    // remove project
-    TodoList.removeProject(projectToRemove);
-    targetElement.remove();
   };
 
   const clearProjectDisplay = () => {
@@ -135,6 +115,27 @@ const DomManipulator = (() => {
         taskContainer.appendChild(noTaskitem);
       }
     }
+  };
+
+  const removeProjectFromList = (e) => {
+    // let the DOM alert the user if they are sure about this
+    const targetElement = e.target.closest('[data-bound-id]');
+    const projectId = targetElement.dataset.boundId;
+    const projectToRemove = TodoList.getProjectFromId(projectId);
+
+    // display sibling project if posible
+    const siblingElement = getSiblingList(targetElement)[0];
+    if (siblingElement !== undefined) {
+      const siblingProject = TodoList.getProjectFromId(siblingElement.dataset.boundId);
+      testdisplay(siblingProject);
+    } else {
+      clearProjectDisplay();
+      projectOnDisplay = undefined;
+    }
+
+    // remove project
+    TodoList.removeProject(projectToRemove);
+    targetElement.remove();
   };
 
   const displayProject = (e) => {
@@ -196,6 +197,7 @@ const DomManipulator = (() => {
   };
 
   const taskObjectFromData = (dataObj) => {
+    console.log(projectOnDisplay);
     const newTask = projectOnDisplay.addNewTask(
       dataObj.title,
       dataObj.description,
@@ -215,17 +217,18 @@ const DomManipulator = (() => {
     const date = newTaskElement.getElementsByClassName('task-duedate')[0];
     const priority = newTaskElement.getElementsByClassName('task-priority')[0];
     const description = newTaskElement.getElementsByClassName('task-description')[0];
+    const removeBtn = newTaskElement.getElementsByClassName('task-remove-btn')[0];
 
     title.textContent = task.title;
     date.textContent = task.duedate;
     priority.textContent = task.priority;
     description.textContent = task.description;
 
+    removeBtn.addEventListener('click', taskRemoveEvent);
     return newTaskElement;
   };
 
-  const submitNewTask = (event) => {
-    event.preventDefault();
+  const submitNewTask = () => {
     // create necessary items
     const taskData = extractTaskData();
     const taskObject = taskObjectFromData(taskData);
@@ -235,6 +238,22 @@ const DomManipulator = (() => {
 
     // display task element
     taskContainer.appendChild(taskElement);
+  };
+
+  const taskSubmitEvent = (event) => {
+    event.preventDefault();
+    if (projectOnDisplay !== undefined) {
+      submitNewTask();
+    }
+  };
+
+  const taskRemoveEvent = (e) => {
+    const targetElement = e.target.closest('[data-bound-id]');
+    const taskId = targetElement.dataset.boundId;
+    const taskToRemove = projectOnDisplay.getTaskFromId(taskId);
+
+    targetElement.remove();
+    projectOnDisplay.removeTask(taskToRemove);
   };
 
   // Event Listeners
@@ -250,7 +269,7 @@ const DomManipulator = (() => {
 
   newTaskButton.addEventListener('click', () => { toggleContainer(newTaskModal); });
 
-  newTaskForm.addEventListener('submit', submitNewTask);
+  newTaskForm.addEventListener('submit', taskSubmitEvent);
 
   newTaskCancel.addEventListener('click', toggleTaskModal); // add new specific toggle function for form });
 })();

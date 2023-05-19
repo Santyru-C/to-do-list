@@ -3,8 +3,12 @@ import Task from './task';
 export default class Project {
   constructor(title) {
     this.title = title;
-    this.id = Date.now(); // use as a unique identifier
     this.taskList = [];
+  }
+
+  getTaskFromId(id) {
+    const selectedTask = this.taskList.find((task) => task.id.toString() === id);
+    return selectedTask;
   }
 
   addNewTask(title, description, dueDate = 'No Date', priority = 'Low') {

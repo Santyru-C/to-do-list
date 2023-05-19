@@ -10,6 +10,7 @@ const DomManipulator = (() => {
   const newTaskButton = document.getElementsByClassName('new-task-btn')[0];
   const newTaskSubmit = document.getElementById('new-task-submit');
   const newTaskCancel = document.getElementById('new-task-cancel');
+  const inboxTab = document.getElementsByClassName('tab inbox')[0];
 
   // Containers
   const projectListContainer = document.getElementsByClassName('project-list-container')[0];
@@ -51,8 +52,6 @@ const DomManipulator = (() => {
     const newId = Date.now();
     obj.id = newId;
     elem.dataset.boundId = newId;
-
-    console.log(obj.id, elem.dataset.boundId);
   };
 
   // templates
@@ -93,10 +92,10 @@ const DomManipulator = (() => {
     projectTitleDisplay.textContent = '';
   };
 
-  const displayAllTasks = (project) => {
-    const tasksToDisplay = project.taskList;
-    tasksToDisplay.forEach((taskObj) => {
+  const displayAllTasks = (taskList) => {
+    taskList.forEach((taskObj) => {
       const taskElement = createTaskElement(taskObj);
+      taskElement.dataset.boundId = taskObj.id;
       taskContainer.appendChild(taskElement);
     });
   };
@@ -107,7 +106,8 @@ const DomManipulator = (() => {
       projectOnDisplay = project;
       // change displayed title
       projectTitleDisplay.textContent = project.title;
-      displayAllTasks(project);
+      const tasksToDisplay = project.taskList;
+      displayAllTasks(tasksToDisplay);
 
       if (project.taskList.length === 0) {
         const noTaskitem = document.createElement('li');
@@ -197,7 +197,6 @@ const DomManipulator = (() => {
   };
 
   const taskObjectFromData = (dataObj) => {
-    console.log(projectOnDisplay);
     const newTask = projectOnDisplay.addNewTask(
       dataObj.title,
       dataObj.description,
@@ -235,6 +234,7 @@ const DomManipulator = (() => {
     const taskElement = createTaskElement(taskData);
 
     bindWithId(taskObject, taskElement);
+    taskObject.projectId = projectOnDisplay.id;
 
     // display task element
     taskContainer.appendChild(taskElement);
@@ -251,11 +251,17 @@ const DomManipulator = (() => {
     const targetElement = e.target.closest('[data-bound-id]');
     const taskId = targetElement.dataset.boundId;
     const taskToRemove = projectOnDisplay.getTaskFromId(taskId);
-
+    const taskOwner = TodoList.getProjectFromId(taskToRemove.projectId);
     targetElement.remove();
-    projectOnDisplay.removeTask(taskToRemove);
+    taskOwner.removeTask(taskToRemove);
+    console.log(taskOwner);
   };
 
+  // general tabs
+
+  const displayInbox = () => {
+    testdisplay(TodoList.inboxProject);
+  };
   // Event Listeners
   menuBtn.addEventListener('click', () => {
     toggleContainer(navContainer);
@@ -272,4 +278,6 @@ const DomManipulator = (() => {
   newTaskForm.addEventListener('submit', taskSubmitEvent);
 
   newTaskCancel.addEventListener('click', toggleTaskModal); // add new specific toggle function for form });
+
+  inboxTab.addEventListener('click', displayInbox);
 })();

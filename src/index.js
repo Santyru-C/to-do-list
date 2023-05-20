@@ -1,6 +1,11 @@
 import App from './app';
 
-const TodoList = new App(); // set it as an IIFE later
+const TodoList = new App();
+// new App(); // set it as an IIFE later
+
+window.addEventListener('click', () => {
+  console.log('hello');
+});
 
 const DomManipulator = (() => {
   let projectOnDisplay;
@@ -179,6 +184,8 @@ const DomManipulator = (() => {
     bindWithId(projectObj, projectElement);
 
     projectListContainer.appendChild(projectElement);
+    const test = JSON.stringify(projectObj); // --------
+    console.log(JSON.parse(test));
 
     toggleContainer(newProjectModal);
     newProjectForm.reset();
